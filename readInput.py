@@ -1,8 +1,8 @@
 '''
 Regulates passing format for this sudoku solver
 
-Use nested lists as input
-__sudokuList[row][col]__
+Pass in: 9 lines of cell numbers without space; empty cells filled with 0s
+return __sudokuList[row][col]__ = integer
 '''
 
 import sys
