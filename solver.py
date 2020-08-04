@@ -17,12 +17,17 @@ class Solver:
         i, j = num //9, num % 9
         
         if self.puzzle.canFill[i][j]:
-            vals = self.puzzle.candidates
+            vals = self.puzzle.candidates[i][j]
             for val in vals:
+                print('num',num,'\nval',val,)
+                prev = self.puzzle.sudokuList[i][j]
                 result = self.puzzle.changeNumber(i, j, val)
                 if result == 0:
                     if self.bruteForce(num + 1):
                         return True
+                    else:
+                        result = self.puzzle.changeNumber(i, j, prev)
+                        assert result == 0, 'Failed to backtrack'
             
             return False
         else:
