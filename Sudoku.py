@@ -1,13 +1,14 @@
 from copy import copy, deepcopy
 from collections import Counter
+from sortedcontainers import SortedList
 
 class Sudoku:
     def __init__(self, sudokuList, advancedInit=True):
         self.sudokuList = sudokuList
         self.canFill = [[False] * 9 for _ in range(9)]
         self.toFillCount = 0
-        self.candidates = [[list(range(1,10)) for i in range(9)] for i in range(9)]
-        self.candidatesSupport = [[[7] * 10 for i in range(9)] for j in range(9)]
+        self.candidates = [[SortedList(range(1,10)) for i in range(9)] for j in range(9)]
+        self.candidatesSupport = [[[0b111] * 10 for i in range(9)] for j in range(9)]
         
         if advancedInit:
             if not self.isLegalGame():
@@ -31,12 +32,12 @@ class Sudoku:
             if i == r: continue
             if val in self.candidates[i][c]:
                 self.candidates[i][c].remove(val)
-            self.candidatesSupport[i][c][val] &= 0 + 2 + 4
+            self.candidatesSupport[i][c][val] &= 0b110
         for j in range(9):
             if j == c: continue
             if val in self.candidates[r][j]:
                 self.candidates[r][j].remove(val)
-            self.candidatesSupport[r][j][val] &= 1 + 0 + 4
+            self.candidatesSupport[r][j][val] &= 0b101
 
         #Square
         a, b = (r//3) * 3, (c//3) * 3
@@ -45,30 +46,30 @@ class Sudoku:
                 if a+i==r and b+j==c: continue
                 if val in self.candidates[a + i][b + j]:
                     self.candidates[a + i][b + j].remove(val) 
-                self.candidatesSupport[a + i][b + j][val] &= 1 + 2 + 0
+                self.candidatesSupport[a + i][b + j][val] &= 0b011
     
     def unsiege(self, r, c, val):
         if val == 0: return
         # line
         for i in range(9):
             if i == r: continue
-            self.candidatesSupport[i][c][val] |= 1
-            if self.candidatesSupport[i][c][val] == 7:
-                self.candidates[i][c].append(val)
+            self.candidatesSupport[i][c][val] |= 0b001
+            if self.candidatesSupport[i][c][val] == 0b111:
+                self.candidates[i][c].add(val)
         for j in range(9):
             if j == c: continue
-            self.candidatesSupport[r][j][val] |= 2
-            if self.candidatesSupport[r][j][val] == 7:
-                self.candidates[r][j].append(val)
+            self.candidatesSupport[r][j][val] |= 0b010
+            if self.candidatesSupport[r][j][val] == 0b111:
+                self.candidates[r][j].add(val)
 
         #Square
         a, b = (r//3) * 3, (c//3) * 3
         for i in range(3):
             for j in range(3):
                 if a+i==r and b+j==c: continue
-                self.candidatesSupport[a + i][b + j][val] |= 4
-                if self.candidatesSupport[a + i][b + j][val] == 7:
-                    self.candidates[a + i][b + j].append(val) 
+                self.candidatesSupport[a + i][b + j][val] |= 0b100
+                if self.candidatesSupport[a + i][b + j][val] == 0b111:
+                    self.candidates[a + i][b + j].add(val) 
     
     def __repr__(self):
         return '\n'.join([' '.join(list(map(str,line))) for line in self.sudokuList])
@@ -121,13 +122,13 @@ class Sudoku:
         c.pop(0, None)
         return len(c) == 0 or max(list(c.values())) < 2
     
-    def changeNumber(self, row, column, number):
+    def changeNumber(self, row, column, toChange):
         """Fill in number at given position. No changes made for unsuccessful fillin.
 
         Args:
             row (int): Value of [0, 8]
             column (int): Value of [0, 8]
-            number (int): Value of [1, 9]
+            number (int): Value of [0, 9]
 
         Returns:
             int: 0 for successfullin; -1 for wrong position; 1 for illegal game
@@ -137,15 +138,15 @@ class Sudoku:
             return -1
         
         prev = self.sudokuList[row][column]
-        if number == prev: return 0
+        if toChange == prev: return 0
         
-        self.sudokuList[row][column] = number
+        self.sudokuList[row][column] = toChange
         if self.isLegalChange(row, column):
+            self.siege(row, column, toChange)
             self.unsiege(row, column, prev)
-            self.siege(row, column, number)
             if prev == 0:
                 self.toFillCount -= 1
-            if number == 0:
+            if toChange == 0:
                 self.toFillCount += 1
             return 0
         else:
