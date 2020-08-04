@@ -9,6 +9,8 @@ class Solver:
         if params['method'] == 'bruteForce':
             result = self.smartBruteForce(0) and self.puzzle.isLegalGame()
             print('Success:',result)
+            print(f'Step count: {self.puzzle.stepCount}')
+            print(f'Backtrack count: {self.puzzle.backtrackCount}')
             
         if 'print' not in params or params['print']:
             if result:
@@ -30,6 +32,7 @@ class Solver:
                     return True
                     
             result = self.puzzle.changeNumber(i, j, 0)
+            self.puzzle.backtrackCount += 1
             if DEBUG: print('backtrack\n')
             assert result == 0, 'Failed to backtrack'
             return False

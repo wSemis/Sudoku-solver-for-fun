@@ -1,12 +1,15 @@
 from copy import copy, deepcopy
 from collections import Counter
 from sortedcontainers import SortedList
+from __init__ import *
 
 class Sudoku:
     def __init__(self, sudokuList, advancedInit=True):
         self.sudokuList = sudokuList
         self.canFill = [[False] * 9 for _ in range(9)]
         self.toFillCount = 0
+        self.stepCount = 0
+        self.backtrackCount = 0
         self.candidates = [[SortedList(range(1,10)) for i in range(9)] for j in range(9)]
         self.candidatesSupport = [[[0b111] * 10 for i in range(9)] for j in range(9)]
         
@@ -140,6 +143,7 @@ class Sudoku:
         prev = self.sudokuList[row][column]
         if toChange == prev: return 0
         
+        self.stepCount += 1
         self.sudokuList[row][column] = toChange
         if self.isLegalChange(row, column):
             self.siege(row, column, toChange)
