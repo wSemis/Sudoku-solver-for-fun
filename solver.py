@@ -9,7 +9,7 @@ class Solver:
         if params['method'] == 'bruteForce':
             result = self.smartBruteForce(0) and self.puzzle.isLegalGame()
             print('Success:',result)
-            print(f'Step count: {self.puzzle.stepCount}')
+            print(f'Number change count: {self.puzzle.numberChangeCount}')
             print(f'Backtrack count: {self.puzzle.backtrackCount}')
             
         if 'print' not in params or params['print']:
