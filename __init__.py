@@ -1,1 +1,1 @@
-DEBUG = False
+from config import *
