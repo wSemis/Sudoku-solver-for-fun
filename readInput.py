@@ -7,6 +7,10 @@ return __sudokuList[row][col]__ = integer
 
 import sys
 
+def readLine(line):
+    
+    return list(map(int, list(line.replace(' ','').strip())))
+
 def readFromTxt(fn):
     with open(fn, 'r') as f:
         lines = f.readlines()
@@ -16,7 +20,7 @@ def readFromTxt(fn):
         if line.strip() == '':
             pass
         else:
-            l = list(map(int, list(line.strip())))
+            l = readLine(line)
             sudokuList.append(l)
             
     assert len(sudokuList) == 9, f'Corrupted file with line number of {len(sudokuList)}'
@@ -36,7 +40,7 @@ def readFromConsole():
             sudokuList = []
         
         else:
-            l = list(map(int, list(line.strip())))
+            l = readLine(line)
             sudokuList.append(l)
 
     assert len(sudokuList) == 9, f'Corrupted file with line number of {len(sudokuList)}'
