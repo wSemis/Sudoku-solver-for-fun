@@ -6,6 +6,7 @@ return __sudokuList[row][col]__ = integer
 '''
 
 import sys
+from __init__ import *
 
 def readLine(line):
     
